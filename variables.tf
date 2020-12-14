@@ -13,7 +13,7 @@ variable "aks_location" {
 }
 
 variable "aks_node_pool_vm_size" {
-  default = "Standard_D2_v2"
+  default = "Standard_B2s"
 }
 
 variable "aks_node_pool_os_disk_size_gb" {

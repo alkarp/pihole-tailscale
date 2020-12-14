@@ -107,6 +107,24 @@ resource "kubernetes_deployment" "pihole" {
             mount_path = "/etc/pihole/whitelist.txt"
             sub_path = "whitelist.txt"
           }
+
+          liveness_probe {
+            http_get {
+              path = "/admin.index.php"
+              port = 80
+            }
+            initial_delay_seconds = 180
+            period_seconds = 15
+          }
+
+          readiness_probe {
+            http_get {
+              path = "/admin.index.php"
+              port = 80
+            }
+            initial_delay_seconds = 60
+            period_seconds = 15
+          }
         }
 
         container {

@@ -1,14 +1,14 @@
 # pihole-tailscale
-The idea of this project is a private Pi-hole instance that is reachable when you're not at home and runs in a environment more reliable than a RaspberryPi connected over home broadband. 
+The idea of this project is a private Pi-hole instance that is reachable when you're not at home and runs in an environment more reliable than a RaspberryPi connected over home broadband. 
 
-Tailscale is an implementation of a WireGuard protocol with some light-house service to simplify device registration and peers autodiscovery. It allows to buld a peer-to-peer overlay mesh network between the Pi-hole instance and the devices you might want to use it as a resolver on. There are clients available for Windows/Linux/macOS/Andoid/iOS platforms. It will also handle DNS client config switching on the device. More details on how it works: https://tailscale.com/blog/how-tailscale-works/
+Tailscale is an implementation of a WireGuard protocol with some light-house service to simplify device registration and peers autodiscovery. It allows building a peer-to-peer overlay mesh network between the Pi-hole instance and the devices you might want to use it as a resolver on. There are clients available for Windows/Linux/macOS/Android/iOS platforms. It will also handle DNS client config switching on the device. More details on how it works: https://tailscale.com/blog/how-tailscale-works/
 
-Terraform project in this repository deploys a Pi-hole container with a Tailscale sidecar on Azure Kubernetes Services cluster. The Pi-hole DNS resolver and Web Admin UI is avilable for clients on you private Tailscale network this helps to reduce attack surface without manually whitelisting evechanging client IPs.
+Terraform project in this repository deploys a Pi-hole container with a Tailscale sidecar on Azure Kubernetes Services cluster. The Pi-hole DNS resolver and Web Admin UI is available for clients on you private Tailscale network this helps to reduce attack surface without manually whitelisting everchanging client IPs.
 
-*AKS is cerataonly an overkill here but it helps with another goal of points of this project which is to play with AKS and Tailscale.* :grin:
+*AKS is certainly an overkill here but it helps with another goal - to play with AKS and Tailscale.* :grin:
 
 ## Requirements
-- Accounts on:
+- Accounts:
 	- Microsoft Azure;
 	- Tailscale;
 - Tools:
@@ -23,15 +23,13 @@ Use Azure CLI to create the account without any default assignments:
 ```sh
 az ad sp create-for-rbac --skip-assignment
 ```
-Necesarry permissions will be delegated to the account during cluster provisioning.
+Necessary permissions will be delegated to the account during cluster provisioning.
 
-Update `terraform.tfvars` file variables:
-- `aks_service_principal_app_id`
-- `aks_service_principal_password`
-### Create Tailscale account and obtain pre-authentication key
-`Solo` plan is free and will allow to register up to 100 devices. Once you have an account, get a reusable client pre-authentication key via admin panel: https://login.tailscale.com/admin/authkeys
-This key will be used by the Tailscale sidecar containers to register with the light-house.
-Save the key in `tailscale_secret_TAILSCALE_AUTH` in the `terraform.tfvars` file.
+Include created credentials in `terraform.tfvars` file variables: `aks_service_principal_app_id`, `aks_service_principal_password`
+### Create Tailscale account and obtain a pre-authentication key
+Tailscale `Solo` plan is free and allows to register up to 100 devices. Once you have an account, get a reusable client pre-authentication key via admin panel: https://login.tailscale.com/admin/authkeys
+This key will be used by the Tailscale sidecar containers to register with the light-house service.
+Store the key in `tailscale_secret_TAILSCALE_AUTH` variable in the `terraform.tfvars` file.
 ### Define Pi-hole Web Admin password
 Define the password for the Pi-hole Web Admin UI via `pihole_secret_WEBPASSWORD` variable in `terraform.tfvars` file.
   
@@ -92,7 +90,7 @@ exec /usr/bin/tailscaled --state=/tailscale/tailscaled.state
 
 ### Áchtung
 
-Both Pi-hole and Tailscale are not originally build for "contenirisaion", not everyting is configurable via env vars or ConfigMaps and requires persistent storage, which means that it can be lost when AKS cluster or Pod is deleted. 
+Both Pi-hole and Tailscale are not conainer-friendly as not everyting is configurable via env vars or ConfigMaps and requires persistent storage, which means that it can be lost when AKS cluster or Pod is deleted. 
 
 Things that require improvemenents or don't currently work:
 - Pi-hole lists configuration at deployment (whitelist\blasklist\adlist) have been moved from flat files into a local database, this makes it harder to maintain them at the deployment stage. Still possible to inject via CLI commands;
