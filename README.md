@@ -46,4 +46,46 @@ $ terraform apply
 
 Now you can register you client devices, once connected it will reconfigure your device DNS client to use the Pi-hole via the Tailscale overlay network.
  
- 
+ ## Build Tailscale container
+Tailscale isn't officialy distributed via docker containers, therefore by defult this project will deploy one from my Docker Hub repo or you can build your own one. Thanks to @hamishforbes for the `Dockerfile` and `entrypoint.sh`.
+
+`Docker`:
+```
+FROM alpine:3.12 AS build
+
+ARG CHANNEL=stable
+ARG VERSION=1.2.10
+ARG ARCH=amd64
+
+RUN mkdir /build
+WORKDIR /build
+RUN apk add --no-cache curl tar
+
+RUN curl -vsLo tailscale.tar.gz "https://pkgs.tailscale.com/${CHANNEL}/tailscale_${VERSION}_${ARCH}.tgz" && \
+    tar xvf tailscale.tar.gz && \
+    mv "tailscale_${VERSION}_${ARCH}/tailscaled" . && \
+    mv "tailscale_${VERSION}_${ARCH}/tailscale" .
+
+FROM alpine:3.12
+
+RUN apk add --no-cache iptables
+
+COPY --from=build /build/tailscale /usr/bin/
+COPY --from=build /build/tailscaled /usr/bin/
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/bin/sh", "/entrypoint.sh"]
+```
+
+`entrypoint.sh`:
+```
+# Create the tun device path if required
+if [ ! -d /dev/net ]; then mkdir /dev/net; fi
+if [ ! -e /dev/net/tun ]; then  mknod /dev/net/tun c 10 200; fi
+
+# Wait 5s for the daemon to start and then run tailscale up to configure
+/bin/sh -c "sleep 5; tailscale up --authkey=${TAILSCALE_AUTH} --advertise-tags=${TAILSCALE_TAGS}" &
+exec /usr/bin/tailscaled --state=/tailscale/tailscaled.state
+```
