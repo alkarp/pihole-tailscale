@@ -1,7 +1,7 @@
 # pihole-tailscale
-The idea of this project is to have a private Pi-hole instance that is reachable when you're not at home and runs in a environment that is more reliable than a RaspberryPi connected over home broadband. 
+The idea of this project is a private Pi-hole instance that is reachable when you're not at home and runs in a environment more reliable than a RaspberryPi connected over home broadband. 
 
-Tailscale is an implementation of a WireGuard protocol with some light-house service to simplify device registration and peers autodiscovery. It allows to buld a peer-to-peer overlay mesh network between the Pi-hole instance and the devices you might want to use it as a resolver. There are clients available for Windows/Linux/macOS/Andoid/iOS platforms. It will also handle DNS client config switching on the device. More details on how it works: https://tailscale.com/blog/how-tailscale-works/
+Tailscale is an implementation of a WireGuard protocol with some light-house service to simplify device registration and peers autodiscovery. It allows to buld a peer-to-peer overlay mesh network between the Pi-hole instance and the devices you might want to use it as a resolver on. There are clients available for Windows/Linux/macOS/Andoid/iOS platforms. It will also handle DNS client config switching on the device. More details on how it works: https://tailscale.com/blog/how-tailscale-works/
 
 Terraform project in this repository deploys a Pi-hole container with a Tailscale sidecar on Azure Kubernetes Services cluster. The Pi-hole DNS resolver and Web Admin UI is avilable for clients on you private Tailscale network this helps to reduce attack surface without manually whitelisting evechanging client IPs.
 
