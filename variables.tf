@@ -1,11 +1,27 @@
 # cluster vars
 
-variable "service_principal_app_id" {
+variable "aks_service_principal_app_id" {
   description = "Azure Kubernetes Service Cluster service principal"
 }
 
-variable "service_principal_password" {
+variable "aks_service_principal_password" {
   description = "Azure Kubernetes Service Cluster password"
+}
+
+variable "aks_location" {
+  default = "UK South"
+}
+
+variable "aks_node_pool_vm_size" {
+  default = "Standard_D2_v2"
+}
+
+variable "aks_node_pool_os_disk_size_gb" {
+  default = 30
+}
+
+variable "aks_node_pool_node_count" {
+  default = 1
 }
 
 # pihole deployment vars
