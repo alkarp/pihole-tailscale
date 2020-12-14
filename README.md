@@ -89,3 +89,11 @@ if [ ! -e /dev/net/tun ]; then  mknod /dev/net/tun c 10 200; fi
 /bin/sh -c "sleep 5; tailscale up --authkey=${TAILSCALE_AUTH} --advertise-tags=${TAILSCALE_TAGS}" &
 exec /usr/bin/tailscaled --state=/tailscale/tailscaled.state
 ```
+
+### Áchtung
+
+Both Pi-hole and Tailscale are not originally build for "contenirisaion", not everyting is configurable via env vars or ConfigMaps and requires persistent storage, which means that it can be lost when AKS cluster or Pod is deleted. 
+
+Things that require improvemenents or don't currently work:
+- Pi-hole lists configuration at deployment (whitelist\blasklist\adlist) have been moved from flat files into a local database, this makes it harder to maintain them at the deployment stage. Still possible to inject via CLI commands;
+- When AKS cluster or Pi-Hole\Tailscale Pod is re-deployed from scratch the last step of the `Deployment` section has to be repeated;
